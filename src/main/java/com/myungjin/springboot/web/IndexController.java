@@ -1,10 +1,12 @@
 package com.myungjin.springboot.web;
 
 import com.myungjin.springboot.service.posts.PostsService;
+import com.myungjin.springboot.web.dto.PostsUpdateResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RequiredArgsConstructor
 @Controller
@@ -20,6 +22,14 @@ public class IndexController {
     @GetMapping("/posts/save")
     public String postsSave(){
         return "posts-save";
+    }
+
+    @GetMapping("/posts/update/{id}")
+    public String postsUpdate(@PathVariable Long id, Model model) {
+        PostsUpdateResponseDto dto = postsService.findById(id);
+        model.addAttribute("post", dto);
+
+        return "posts-update";
     }
 
 }

@@ -5,6 +5,7 @@ import com.myungjin.springboot.web.dto.PostsSaveRequestDto;
 import com.myungjin.springboot.web.dto.PostsUpdateRequestDto;
 import com.myungjin.springboot.web.dto.PostsUpdateResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -26,5 +27,11 @@ public class PostApiController {
     @GetMapping("/api/v1/posts/{id}")
     public PostsUpdateResponseDto findById(@PathVariable Long id){
         return postsService.findById(id);
+    }
+
+    @DeleteMapping("/api/v1/posts/{id}")
+    public Long delete(@PathVariable Long id){
+        postsService.delete(id);
+        return id;
     }
 }
