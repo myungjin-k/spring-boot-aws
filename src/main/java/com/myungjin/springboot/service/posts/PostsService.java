@@ -5,7 +5,7 @@ import com.myungjin.springboot.domain.posts.PostsRepository;
 import com.myungjin.springboot.web.dto.PostsListResponseDto;
 import com.myungjin.springboot.web.dto.PostsSaveRequestDto;
 import com.myungjin.springboot.web.dto.PostsUpdateRequestDto;
-import com.myungjin.springboot.web.dto.PostsUpdateResponseDto;
+import com.myungjin.springboot.web.dto.PostsResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,11 +33,11 @@ public class PostsService {
         return id;
     }
     @Transactional
-    public PostsUpdateResponseDto findById(Long id){
+    public PostsResponseDto findById(Long id){
         Posts entity = postsRepository.findById(id).orElseThrow(()
                 -> new IllegalArgumentException("해당 게시물이 없습니다. id="+id));
 
-        return new PostsUpdateResponseDto(entity);
+        return new PostsResponseDto(entity);
     }
 
     @Transactional

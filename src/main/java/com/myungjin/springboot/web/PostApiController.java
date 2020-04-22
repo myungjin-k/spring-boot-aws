@@ -3,9 +3,8 @@ package com.myungjin.springboot.web;
 import com.myungjin.springboot.service.posts.PostsService;
 import com.myungjin.springboot.web.dto.PostsSaveRequestDto;
 import com.myungjin.springboot.web.dto.PostsUpdateRequestDto;
-import com.myungjin.springboot.web.dto.PostsUpdateResponseDto;
+import com.myungjin.springboot.web.dto.PostsResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class PostApiController {
     }
 
     @GetMapping("/api/v1/posts/{id}")
-    public PostsUpdateResponseDto findById(@PathVariable Long id){
+    public PostsResponseDto findById(@PathVariable Long id){
         return postsService.findById(id);
     }
 
