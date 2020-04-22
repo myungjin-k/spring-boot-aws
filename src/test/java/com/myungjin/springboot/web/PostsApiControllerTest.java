@@ -2,9 +2,9 @@ package com.myungjin.springboot.web;
 
 import com.myungjin.springboot.domain.posts.Posts;
 import com.myungjin.springboot.domain.posts.PostsRepository;
+import com.myungjin.springboot.web.dto.PostsResponseDto;
 import com.myungjin.springboot.web.dto.PostsSaveRequestDto;
 import com.myungjin.springboot.web.dto.PostsUpdateRequestDto;
-import com.myungjin.springboot.web.dto.PostsUpdateResponseDto;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,21 +69,21 @@ public class PostsApiControllerTest {
     public void Posts_수정된다() throws Exception {
         //given
         Posts savedPosts = postsRepository.save(Posts.builder()
-                                .title("title")
-                                .content("content")
-                                .author("author")
-                                .build());
+                .title("title")
+                .content("content")
+                .author("author")
+                .build());
 
         Long updateId = savedPosts.getId();
         String expectedTitle = "title2";
         String expectedContent = "content2";
 
         PostsUpdateRequestDto requestDto = PostsUpdateRequestDto.builder()
-                                            .title(expectedTitle)
-                                            .content(expectedContent)
-                                            .build();
+                .title(expectedTitle)
+                .content(expectedContent)
+                .build();
 
-        String url = "http://localhost:" + port + "api/v1/posts/" +updateId;
+        String url = "http://localhost:" + port + "/api/v1/posts/" +updateId;
 
         HttpEntity<PostsUpdateRequestDto> requestEntity = new HttpEntity<>(requestDto);
 
@@ -96,6 +96,62 @@ public class PostsApiControllerTest {
         List<Posts> all = postsRepository.findAll();
         assertThat(all.get(0).getTitle()).isEqualTo(expectedTitle);
         assertThat(all.get(0).getContent()).isEqualTo(expectedContent);
+
+
+    }
+    @Test
+    public void Posts_하나_가져온다() throws Exception {
+        //given
+        String title = "title";
+        String content = "content";
+
+
+        Posts savedPosts = postsRepository.save(Posts.builder()
+                .title(title)
+                .content(content)
+                .author("author")
+                .build());
+
+        Long updateId = savedPosts.getId();
+
+
+        String url = "http://localhost:" + port + "/api/v1/posts/" +updateId;
+
+        //when
+        ResponseEntity<PostsResponseDto> responseEntity = restTemplate.getForEntity(url,PostsResponseDto.class);
+
+        //then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Posts post = postsRepository.findById(updateId).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 없습니다."));
+        assertThat(post.getTitle()).isEqualTo(title);
+        assertThat(post.getContent()).isEqualTo(content);
+
+
+    }
+    @Test
+    public void Posts_삭제한다() throws Exception {
+        //given
+        String title = "title";
+        String content = "content";
+
+
+        Posts savedPosts = postsRepository.save(Posts.builder()
+                .title(title)
+                .content(content)
+                .author("author")
+                .build());
+
+        Long deleteId = savedPosts.getId();
+
+
+        String url = "http://localhost:" + port + "/api/v1/posts/" +deleteId;
+
+        //when
+        restTemplate.delete(url);
+
+        //then
+        Posts post = postsRepository.findById(deleteId).orElse(null);
+        assertThat(post).isNull();
 
 
     }
