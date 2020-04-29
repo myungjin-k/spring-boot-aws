@@ -18,6 +18,7 @@ import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -25,8 +26,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -114,7 +115,9 @@ public class PostsApiControllerTest {
         mvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(new ObjectMapper().writeValueAsString(requestDto))
-            ).andExpect(status().isOk());
+            )
+                .andDo(print())
+                .andExpect(status().isOk());
 
         //then
         List<Posts> all = postsRepository.findAll();
@@ -124,6 +127,7 @@ public class PostsApiControllerTest {
 
     }
     @Test
+    @WithMockUser(roles = "USER")
     public void Posts_하나_가져온다() throws Exception {
         //given
         String title = "title";
@@ -136,23 +140,28 @@ public class PostsApiControllerTest {
                 .author("author")
                 .build());
 
-        Long updateId = savedPosts.getId();
+        Long getId = savedPosts.getId();
 
 
-        String url = "http://localhost:" + port + "/api/v1/posts/" +updateId;
+        String url = "http://localhost:" + port + "/api/v1/posts/" +getId;
 
         //when
-        ResponseEntity<PostsResponseDto> responseEntity = restTemplate.getForEntity(url,PostsResponseDto.class);
+
+        MvcResult result = mvc.perform(get(url))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
 
         //then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Posts post = postsRepository.findById(updateId).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 없습니다."));
+
+        Posts post = postsRepository.findById(getId).orElseThrow(() -> new IllegalArgumentException("해당 게시물이 없습니다."));
         assertThat(post.getTitle()).isEqualTo(title);
         assertThat(post.getContent()).isEqualTo(content);
 
 
     }
     @Test
+    @WithMockUser(roles = "USER")
     public void Posts_삭제한다() throws Exception {
         //given
         String title = "title";
@@ -171,11 +180,16 @@ public class PostsApiControllerTest {
         String url = "http://localhost:" + port + "/api/v1/posts/" +deleteId;
 
         //when
-        restTemplate.delete(url);
+        MvcResult result = mvc.perform(delete(url))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+        ;
 
         //then
-        Posts post = postsRepository.findById(deleteId).orElse(null);
-        assertThat(post).isNull();
+        assertThat(result.getResponse().getContentAsString()).isEqualTo(String.valueOf(deleteId));
+        Posts post = postsRepository.findById(deleteId).orElse(new Posts());
+        assertThat(post.getId()).isNull();
 
 
     }
