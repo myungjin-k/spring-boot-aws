@@ -12,8 +12,8 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 
+before_install: "chmod +x gradlew"
 # push 되었을 때 수행 명령
-before_script: "chmod +x gradlew"
 script: "./gradlew clean build"
 
 # CI 실행 완료 시 메일로 알람
