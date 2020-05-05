@@ -47,4 +47,10 @@
 
 ### 2020-05-04
 * Travis CI 설정 추가
+
+
+
+### 2020-05-05
+* EC2 test failure 수정
+  * test/resources/application.properties 추가
   
