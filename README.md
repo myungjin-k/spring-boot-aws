@@ -1,4 +1,4 @@
-## 스프링부트와 AWS로 혼자 구현하는 웹 서비스
+## 스프링부트와 AWS로 혼자 구현하는 웹 서비스 [![Build Status](https://travis-ci.org/myungjin-k/spring-boot-aws.svg?branch=master)](https://travis-ci.org/myungjin-k/spring-boot-aws)
 ### 2020-04-17
 * 프로젝트 생성
 * gradle 프로젝트를 spring boot 프로젝트로 변경 - build.gradle
